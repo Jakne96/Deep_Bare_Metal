@@ -1,0 +1,87 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+FLASH            0x08000000         0x00080000         xr
+SRAM             0x20000000         0x00018000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD main.o
+LOAD stm32f401_startup.o
+                0x20018000                _estack = (ORIGIN (SRAM) + LENGTH (SRAM))
+                0x00000200                __max_heap_size = 0x200
+                0x00000400                __max_stack_size = 0x400
+
+.text           0x08000000      0x11c
+                0x08000000                . = ALIGN (0x4)
+ *(.isr_vector_tbl)
+ .isr_vector_tbl
+                0x08000000       0x14 stm32f401_startup.o
+                0x08000000                vector_tbl
+ *(.text)
+ .text          0x08000014       0x7c main.o
+                0x08000014                main
+ .text          0x08000090       0x8c stm32f401_startup.o
+                0x08000090                NMI_Handler
+                0x08000090                MemManage_Handler
+                0x08000090                Default_Handler
+                0x08000090                HardFault_Handler
+                0x08000096                Reset_Handler
+ *(.rodata)
+                0x0800011c                . = ALIGN (0x4)
+                0x0800011c                _etext = .
+
+.glue_7         0x0800011c        0x0
+ .glue_7        0x0800011c        0x0 linker stubs
+
+.glue_7t        0x0800011c        0x0
+ .glue_7t       0x0800011c        0x0 linker stubs
+
+.vfp11_veneer   0x0800011c        0x0
+ .vfp11_veneer  0x0800011c        0x0 linker stubs
+
+.v4_bx          0x0800011c        0x0
+ .v4_bx         0x0800011c        0x0 linker stubs
+
+.iplt           0x0800011c        0x0
+ .iplt          0x0800011c        0x0 stm32f401_startup.o
+
+.rel.dyn        0x0800011c        0x0
+ .rel.iplt      0x0800011c        0x0 stm32f401_startup.o
+
+.data           0x20000000        0x0 load address 0x0800011c
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _sdata = .
+ *(.data)
+ .data          0x20000000        0x0 main.o
+ .data          0x20000000        0x0 stm32f401_startup.o
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _edata = .
+
+.igot.plt       0x20000000        0x0 load address 0x0800011c
+ .igot.plt      0x20000000        0x0 stm32f401_startup.o
+
+.bss            0x20000000        0x0 load address 0x0800011c
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _sbss = .
+ *(.bss)
+ .bss           0x20000000        0x0 main.o
+ .bss           0x20000000        0x0 stm32f401_startup.o
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _ebss = .
+OUTPUT(4_makefile_project.elf elf32-littlearm)
+LOAD linker stubs
+
+.comment        0x00000000       0x49
+ .comment       0x00000000       0x49 main.o
+                                 0x4a (size before relaxing)
+ .comment       0x00000049       0x4a stm32f401_startup.o
+
+.ARM.attributes
+                0x00000000       0x2e
+ .ARM.attributes
+                0x00000000       0x2e main.o
+ .ARM.attributes
+                0x0000002e       0x2e stm32f401_startup.o
